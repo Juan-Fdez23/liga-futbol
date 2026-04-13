@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-
+#include <ctime>
 
 struct ConfigLigue {
     std::string NomDeLaLigue;  // Nombre de la liga
@@ -28,16 +28,16 @@ struct ConfigTable{
 ConfigLigue LireConfig(){
     std::ifstream Iconfig("../data/config.txt");
     ConfigLigue config;
-    std::string v;
+    std::string i;
     if(Iconfig.is_open()){
         std::cout << "Se ha leido correctamente el archivo \n";
-        while(std::getline(Iconfig , v)){
-            if(v.empty() || v[0] == '#'){
+        while(std::getline(Iconfig , i)){
+            if(i.empty() || i[0] == '#'){
                  continue;
             }
 
             std::string cle, valeur; // clave, valor
-            std::stringstream ss(v); //stringstream se usa para separar partes de un string
+            std::stringstream ss(i); //stringstream se usa para separar partes de un string
 
             std::getline(ss , cle , '=');
             std::getline(ss, valeur);
@@ -65,8 +65,6 @@ ConfigLigue LireConfig(){
     }
 }
 
-
-
 std::vector<ConfigParti> LirePartidos(){
     std::ifstream Iparti("../data/partidos.txt");
     std::vector<ConfigParti> partis;
@@ -90,16 +88,31 @@ std::vector<ConfigParti> LirePartidos(){
             parti.golV = std::stoi(gaV);
 
             partis.push_back(parti);
+            Iparti.close();
         };
 }else{
     return partis;
 }
 }
 
+void LireJournee(){
+    std::ifstream IFechas("../data/fechas.txt");
+    std::string i;
+    if(IFechas.is_open()){
+      while(std::getline(IFechas, i)){
+        std::cout << i << "\n";
+        IFechas.close();
+    }  
+    }else if(i.empty() && IFechas.is_open()){
+        std::cout << "No hay jornadas registradas en el momento. \n";
+        return;
+    }else{
+        std::cout << "Ha habido un error al leer fechas.txt";
+    }
+}
 
-void LireFechas(){}
-
-void GarderParti(ConfigParti Parti){
+// Funciones de escritura de archivos. 
+void RecevoirParti(ConfigParti Parti){
     std::ofstream Oparti("../data/partidos.txt", std::ios::app);
     if(Oparti.is_open()){
         Oparti << Parti.date << "|" << Parti.Elocal << "|" << Parti.Evisiteurs << "|" << Parti.golL << "|" << Parti.golV << "\n";
@@ -108,19 +121,20 @@ void GarderParti(ConfigParti Parti){
     }
 }
 
-
-
-
-void RecevoirParti(){
-
+void RecevoirJournee(ConfigParti Parti){
+    std::ofstream OFechas("../data/fechas.txt" , std::ios::app);
+    if(OFechas.is_open()){
+         OFechas << "Jornada: \n" << Parti.date << "|" << Parti.Elocal << " " << Parti.golL << "-" << Parti.golV << Parti.Evisiteurs << "|" << "\n" << "Fin de la jornada" << '\n';
+         OFechas.close();
+    }else{
+        std::cout << "Ha ocurrido un error con el archivo \n";
+    }
 }
 
-void RecevoirJournee(){
-
-}
+// Funciones de logica de la liga.
 
 
-
+// Funciones de Interfaz de Usuario (UI)
 int InfoMenu(std::string NomDeLaLigue){
     
     int opt;
@@ -158,6 +172,7 @@ int menu(){
             }
             case 3:{
                 std::cout << "Has elegido ver el historial de jornadas. \n";
+                LireJournee();
                 break;
             }
             case 4:{
@@ -176,6 +191,11 @@ int menu(){
        
     } while(opt != 5);
 
+}
+
+int main(){
+    menu();
+    return 0;
 }
 
 int main(){
