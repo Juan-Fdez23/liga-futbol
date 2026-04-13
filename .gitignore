@@ -36,6 +36,17 @@
 *.exe
 *.out
 *.app
+a.out
 
 # debug information files
 *.dwo
+
+# Carpetas de compilación
+build/
+bin/
+.vscode/
+.idea/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
