@@ -1,1 +1,13 @@
+#Nombre de la Liga.
+Liga=LaLigueDesCouluers
 
+# N° De Puntos
+Victoria=3
+Empate=1
+Derrota=0
+
+# Equipos Participantes
+equipo=Rouge
+equipo=Bleu
+equipo=Jaune
+equipo=Vert
