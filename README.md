@@ -14,9 +14,7 @@ El programa puede realizar diversas funciones, como por ejemplo:
 * Si el archivo esta C:\...\futbol-liga, usar el comando "cd src" -- para abrir la carpeta src.
 * Y ya con la terminal en C:\...\futbol-liga\src usar el comando "g++ main.cpp" -- para compilar el archivo. 
 * Eso dará un archivo tipo .app donde para ejecutarlo tendras que poner en terminal "./a"
-* Al ejecutar el archivo, podras encontrar un menu donde te guiará a realizar lo que deseas hacer de lsa funciones descritas anteriormente.
-
-
+* Al ejecutar el archivo, podras encontrar un menu donde te guiará a realizar lo que deseas hacer de las funciones descritas anteriormente.
 
 
 
