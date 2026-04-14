@@ -19,7 +19,7 @@ struct ConfigParti {
 
 struct ConfigTable{
     std::string nom;
-    int PJ, PG , PE, PP , GF , FC , DG, PTS; 
+    int PJ, PG , PE, PP , GF , GC , DG, PTS; 
 };
 
 // Funciones de lectura de archivos.
@@ -59,7 +59,7 @@ ConfigLigue LireConfig(){
 
         }
     } else{
-    std::cout << "Hubo un error al abrir el archivo";
+    std::cout << "\033[31mHubo un error al abrir el archivo\033[0m";
     std::cout <<  '\a';
     exit(1);
     }
@@ -116,6 +116,7 @@ void RecevoirParti(ConfigParti Parti){
     std::ofstream Oparti("../data/partidos.txt", std::ios::app);
     if(Oparti.is_open()){
         Oparti << Parti.date << "|" << Parti.Elocal << "|" << Parti.Evisiteurs << "|" << Parti.golL << "|" << Parti.golV << "\n";
+        Oparti.close();
     }else{
         std::cout << "Error guardando partido \n";
     }
@@ -132,9 +133,75 @@ void RecevoirJournee(ConfigParti Parti){
 }
 
 // Funciones de logica de la liga.
+void ActualiserEquipe(ConfigTable* Ddata, ConfigParti parti, ConfigLigue ConfigL){
+    if(Ddata->nom == parti.Elocal){
+        Ddata->PJ++;
+        Ddata->GF += parti.golL;
+        Ddata->GC += parti.golV;
+
+        if(parti.golL > parti.golV){
+            Ddata->PG++;
+            Ddata->PTS += ConfigL.vic;
+        }else if(parti.golL == parti.golV){
+            Ddata->PE++;
+            Ddata->PTS += ConfigL.matnul;
+        }else{
+            Ddata->PP++;
+            Ddata->PTS += ConfigL.def;
+        }
+    }
+    if(Ddata->nom == parti.Evisiteurs){
+        Ddata->PJ++;
+        Ddata->GF += parti.golV;
+        Ddata->GC += parti.golL;
+
+        if(parti.golV > parti.golL){
+            Ddata->PG++;
+            Ddata->PTS += ConfigL.vic;
+        }else if(parti.golV == parti.golL){
+            Ddata->PE++;
+            Ddata->PTS += ConfigL.matnul;
+        }else{
+            Ddata->PP++;
+            Ddata-> PTS += ConfigL.def;
+        }
+    }
+    Ddata->DG = Ddata->GF - Ddata->GC;
+}
+
+std::vector<ConfigTable> CreeTable(std::vector<ConfigParti> Partis, ConfigLigue configL){
+    std::vector<ConfigTable> Equipes;
+    for(std::string prenom : configL.Equipes){
+        ConfigTable v;
+        v.nom = prenom;
+        Equipes.push_back(v);
+
+        for(ConfigParti parti : Partis){
+            for(ConfigTable &vq : Equipes){
+                ActualiserEquipe(&vq, parti, configL);
+            }
+        }
+    }
+    return Equipes;
+}
+
+bool ComparerEquipes(ConfigTable ComparerE1, ConfigTable ComparerE2){
+    if(ComparerE1.PTS != ComparerE2.PTS){
+        return ComparerE1.PTS > ComparerE2.PTS;
+    }
+    if(ComparerE1.DG != ComparerE2.DG){
+        return ComparerE1.DG > ComparerE2.DG;
+    }
+
+    return ComparerE1.GF > ComparerE2.GF;
+}
+
+void ClasserTable(std::vector<ConfigTable> &equipes){
+    std::sort(equipes.begin(), equipes.end(), ComparerEquipes);
+}
 
 
-// Funciones de Interfaz de Usuario (UI)
+    // Funciones de Interfaz de Usuario (UI)
 int InfoMenu(std::string NomDeLaLigue){
     
     int opt;
@@ -191,11 +258,6 @@ int menu(){
        
     } while(opt != 5);
 
-}
-
-int main(){
-    menu();
-    return 0;
 }
 
 int main(){
